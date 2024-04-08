@@ -3,15 +3,16 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/BohdanBoriak/boilerplate-go-back/config"
-	"github.com/BohdanBoriak/boilerplate-go-back/config/container"
-	"github.com/BohdanBoriak/boilerplate-go-back/internal/infra/database"
-	"github.com/BohdanBoriak/boilerplate-go-back/internal/infra/http"
 	"log"
 	"os"
 	"os/signal"
 	"runtime/debug"
 	"syscall"
+
+	"github.com/BohdanBoriak/boilerplate-go-back/config"
+	"github.com/BohdanBoriak/boilerplate-go-back/config/container"
+	"github.com/BohdanBoriak/boilerplate-go-back/internal/infra/database"
+	"github.com/BohdanBoriak/boilerplate-go-back/internal/infra/http"
 )
 
 func main() {
@@ -45,14 +46,13 @@ func main() {
 		log.Fatalf("Unable to apply migrations: %q\n", err)
 	}
 
-	cont := container.New(conf, ctx)
+	cont := container.New(conf)
 
 	// HTTP Server
 	err = http.Server(
 		ctx,
 		http.Router(cont),
 	)
-
 	if err != nil {
 		fmt.Printf("http server error: %s", err)
 		exitCode = 2
