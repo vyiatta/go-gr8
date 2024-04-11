@@ -11,10 +11,6 @@ type UserDto struct {
 	Role       domain.Role `json:"role,omitempty"`
 }
 
-type SimpleUserDto struct {
-	Id uint64 `json:"id"`
-}
-
 type AuthDto struct {
 	Token string  `json:"token"`
 	User  UserDto `json:"user"`
@@ -29,17 +25,10 @@ type UsersDto struct {
 func (d UserDto) DomainToDto(user domain.User) UserDto {
 	return UserDto{
 		Id:         user.Id,
-		Phone:      user.Phone,
 		FirstName:  user.FirstName,
 		SecondName: user.SecondName,
 		Email:      user.Email,
 		Role:       user.Role,
-	}
-}
-
-func (d SimpleUserDto) DomainToDto(user domain.User) SimpleUserDto {
-	return SimpleUserDto{
-		Id: user.Id,
 	}
 }
 
@@ -57,12 +46,4 @@ func (d AuthDto) DomainToDto(token string, user domain.User) AuthDto {
 		Token: token,
 		User:  userDto.DomainToDto(user),
 	}
-}
-
-func (d SimpleUserDto) DomainToDtoCollection(users []domain.User) []SimpleUserDto {
-	result := make([]SimpleUserDto, len(users))
-	for i, u := range users {
-		result[i] = d.DomainToDto(u)
-	}
-	return result
 }

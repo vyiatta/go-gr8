@@ -10,9 +10,9 @@ const UsersTableName = "users"
 
 type user struct {
 	Id          uint64      `db:"id,omitempty"`
-	Phone       string      `json:"phone"`
 	FirstName   string      `db:"first_name"`
 	SecondName  string      `db:"second_name"`
+	Password    string      `json:"password"`
 	Email       string      `db:"email"`
 	Role        domain.Role `db:"role"`
 	CreatedDate time.Time   `db:"created_date,omitempty"`
@@ -21,7 +21,7 @@ type user struct {
 }
 
 type UserRepository interface {
-	FindByPhone(phone string) (domain.User, error)
+	FindByEmail(phone string) (domain.User, error)
 	FindById(id uint64) (domain.User, error)
 	Find(id uint64) (interface{}, error)
 	Save(user domain.User) (domain.User, error)
@@ -41,9 +41,9 @@ func NewUserRepository(dbSession db.Session) UserRepository {
 	}
 }
 
-func (r userRepository) FindByPhone(phone string) (domain.User, error) {
+func (r userRepository) FindByEmail(email string) (domain.User, error) {
 	var u user
-	err := r.coll.Find(db.Cond{"phone": phone, "deleted_date": nil}).One(&u)
+	err := r.coll.Find(db.Cond{"email": email, "deleted_date": nil}).One(&u)
 	if err != nil {
 		return domain.User{}, err
 	}
@@ -98,8 +98,8 @@ func (r userRepository) Delete(id uint64) error {
 func (r userRepository) mapDomainToModel(d domain.User) user {
 	return user{
 		Id:          d.Id,
-		Phone:       d.Phone,
 		Email:       d.Email,
+		Password:    d.Password,
 		FirstName:   d.FirstName,
 		SecondName:  d.SecondName,
 		Role:        d.Role,
@@ -113,7 +113,7 @@ func (r userRepository) mapModelToDomain(m user) domain.User {
 	return domain.User{
 		Id:          m.Id,
 		Email:       m.Email,
-		Phone:       m.Phone,
+		Password:    m.Password,
 		FirstName:   m.FirstName,
 		SecondName:  m.SecondName,
 		Role:        m.Role,

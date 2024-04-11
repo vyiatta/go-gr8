@@ -69,12 +69,12 @@ func Router(cont container.Container) http.Handler {
 func AuthRouter(r chi.Router, ac controllers.AuthController, amw func(http.Handler) http.Handler) {
 	r.Route("/", func(apiRouter chi.Router) {
 		apiRouter.Post(
+			"/register",
+			ac.Register(),
+		)
+		apiRouter.Post(
 			"/login",
 			ac.Login(),
-		)
-		apiRouter.With(amw).Post(
-			"/code/new-phone",
-			ac.CheckNewPhoneCode(),
 		)
 		apiRouter.With(amw).Post(
 			"/logout",

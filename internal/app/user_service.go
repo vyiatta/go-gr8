@@ -7,7 +7,7 @@ import (
 )
 
 type UserService interface {
-	FindByPhone(phone string) (domain.User, error)
+	FindByEmail(email string) (domain.User, error)
 	FindById(id uint64) (domain.User, error)
 	Find(id uint64) (interface{}, error)
 	Save(user domain.User) (domain.User, error)
@@ -25,8 +25,8 @@ func NewUserService(ur database.UserRepository) UserService {
 	}
 }
 
-func (s userService) FindByPhone(phone string) (domain.User, error) {
-	user, err := s.userRepo.FindByPhone(phone)
+func (s userService) FindByEmail(email string) (domain.User, error) {
+	user, err := s.userRepo.FindByEmail(email)
 	if err != nil {
 		log.Printf("UserService: %s", err)
 		return domain.User{}, err
