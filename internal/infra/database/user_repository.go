@@ -1,9 +1,10 @@
 package database
 
 import (
+	"time"
+
 	"github.com/BohdanBoriak/boilerplate-go-back/internal/domain"
 	"github.com/upper/db/v4"
-	"time"
 )
 
 const UsersTableName = "users"
@@ -12,7 +13,7 @@ type user struct {
 	Id          uint64      `db:"id,omitempty"`
 	FirstName   string      `db:"first_name"`
 	SecondName  string      `db:"second_name"`
-	Password    string      `json:"password"`
+	Password    string      `db:"password"`
 	Email       string      `db:"email"`
 	Role        domain.Role `db:"role"`
 	CreatedDate time.Time   `db:"created_date,omitempty"`

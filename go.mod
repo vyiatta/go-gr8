@@ -11,6 +11,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/lestrrat-go/jwx/v2 v2.0.8
 	github.com/upper/db/v4 v4.6.0
+	golang.org/x/crypto v0.5.0
 )
 
 require (
@@ -37,7 +38,6 @@ require (
 	github.com/lib/pq v1.10.4 // indirect
 	github.com/segmentio/fasthash v1.0.3 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
-	golang.org/x/crypto v0.5.0 // indirect
 	golang.org/x/sys v0.4.0 // indirect
 	golang.org/x/text v0.6.0 // indirect
 	google.golang.org/genproto v0.0.0-20220810155839-1856144b1d9c // indirect
