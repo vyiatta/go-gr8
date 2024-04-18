@@ -4,7 +4,6 @@ import "github.com/BohdanBoriak/boilerplate-go-back/internal/domain"
 
 type UserDto struct {
 	Id         uint64      `json:"id"`
-	Phone      string      `json:"phone"`
 	FirstName  string      `json:"firstName"`
 	SecondName string      `json:"secondName"`
 	Email      string      `json:"email"`
