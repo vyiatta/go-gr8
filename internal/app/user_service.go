@@ -3,7 +3,6 @@ package app
 import (
 	"github.com/BohdanBoriak/boilerplate-go-back/internal/domain"
 	"github.com/BohdanBoriak/boilerplate-go-back/internal/infra/database"
-	"golang.org/x/crypto/bcrypt"
 	"log"
 )
 
@@ -11,7 +10,6 @@ type UserService interface {
 	FindByEmail(email string) (domain.User, error)
 	FindById(id uint64) (domain.User, error)
 	Find(id uint64) (interface{}, error)
-	Save(user domain.User) (domain.User, error)
 	Update(user domain.User) (domain.User, error)
 	Delete(id uint64) error
 }
@@ -54,23 +52,6 @@ func (s userService) Find(id uint64) (interface{}, error) {
 	return user, err
 }
 
-func (s userService) Save(user domain.User) (domain.User, error) {
-	var err error
-	user.Password, err = s.GeneratePasswordHash(user.Password)
-	if err != nil {
-		log.Printf("UserService: %s", err)
-		return domain.User{}, err
-	}
-
-	user, err = s.userRepo.Save(user)
-	if err != nil {
-		log.Printf("UserService: %s", err)
-		return domain.User{}, err
-	}
-
-	return user, err
-}
-
 func (s userService) Update(user domain.User) (domain.User, error) {
 	user, err := s.userRepo.Update(user)
 	if err != nil {
@@ -89,9 +70,4 @@ func (s userService) Delete(id uint64) error {
 	}
 
 	return nil
-}
-
-func (s userService) GeneratePasswordHash(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	return string(bytes), err
 }

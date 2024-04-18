@@ -21,23 +21,23 @@ type AuthService interface {
 }
 
 type authService struct {
-	authRepo    database.SessionRepository
-	userService UserService
-	tokenAuth   *jwtauth.JWTAuth
-	jwtTTL      time.Duration
+	authRepo  database.SessionRepository
+	userRepo  database.UserRepository
+	tokenAuth *jwtauth.JWTAuth
+	jwtTTL    time.Duration
 }
 
-func NewAuthService(ar database.SessionRepository, us UserService, ta *jwtauth.JWTAuth, jwtTtl time.Duration) AuthService {
+func NewAuthService(ar database.SessionRepository, ur database.UserRepository, ta *jwtauth.JWTAuth, jwtTtl time.Duration) AuthService {
 	return authService{
-		authRepo:    ar,
-		userService: us,
-		tokenAuth:   ta,
-		jwtTTL:      jwtTtl,
+		authRepo:  ar,
+		userRepo:  ur,
+		tokenAuth: ta,
+		jwtTTL:    jwtTtl,
 	}
 }
 
 func (s authService) Register(user domain.User) (domain.User, string, error) {
-	_, err := s.userService.FindByEmail(user.Email)
+	_, err := s.userRepo.FindByEmail(user.Email)
 	if err == nil {
 		log.Printf("invalid credentials")
 		return domain.User{}, "", errors.New("invalid credentials")
@@ -46,7 +46,13 @@ func (s authService) Register(user domain.User) (domain.User, string, error) {
 		return domain.User{}, "", err
 	}
 
-	user, err = s.userService.Save(user)
+	user.Password, err = s.generatePasswordHash(user.Password)
+	if err != nil {
+		log.Printf("UserService: %s", err)
+		return domain.User{}, "", err
+	}
+
+	user, err = s.userRepo.Save(user)
 	if err != nil {
 		log.Print(err)
 		return domain.User{}, "", err
@@ -57,7 +63,7 @@ func (s authService) Register(user domain.User) (domain.User, string, error) {
 }
 
 func (s authService) Login(user domain.User) (domain.User, string, error) {
-	u, err := s.userService.FindByEmail(user.Email)
+	u, err := s.userRepo.FindByEmail(user.Email)
 	if err != nil {
 		if errors.Is(err, db.ErrNoMoreRows) {
 			log.Printf("AuthService: failed to find user %s", err)
@@ -107,6 +113,11 @@ func (s authService) GenerateJwt(user domain.User) (string, error) {
 
 func (s authService) Check(sess domain.Session) error {
 	return s.authRepo.Exists(sess)
+}
+
+func (s authService) generatePasswordHash(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(bytes), err
 }
 
 func (s authService) checkPasswordHash(password, hash string) bool {
