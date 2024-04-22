@@ -12,8 +12,8 @@ type RegisterRequest struct {
 }
 
 type LoginRequest struct {
-	Email    string `json:"id" validate:"required,email"`
-	Password string `json:"code"  validate:"required,gte=4"`
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password"  validate:"required,gte=4"`
 }
 
 type UpdateUserRequest struct {
@@ -41,7 +41,7 @@ func (r UpdateUserRequest) ToDomainModel() (interface{}, error) {
 
 func (r LoginRequest) ToDomainModel() (interface{}, error) {
 	return domain.User{
-		SecondName: r.Password,
-		Email:      r.Email,
+		Password: r.Password,
+		Email:    r.Email,
 	}, nil
 }
