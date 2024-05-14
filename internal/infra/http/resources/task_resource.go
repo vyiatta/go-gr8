@@ -16,3 +16,16 @@ type TaskDto struct {
 	CreatedDate time.Time         `json:"createdDate"`
 	UpdatedDate time.Time         `json:"updatedDate"`
 }
+
+func (d TaskDto) DomainToDto(t domain.Task) TaskDto {
+	return TaskDto{
+		Id:          t.Id,
+		UserId:      t.UserId,
+		Title:       t.Title,
+		Description: t.Description,
+		Status:      t.Status,
+		Deadline:    t.Deadline,
+		CreatedDate: t.CreatedDate,
+		UpdatedDate: t.UpdatedDate,
+	}
+}
