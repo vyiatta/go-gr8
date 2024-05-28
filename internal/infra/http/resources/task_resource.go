@@ -17,6 +17,10 @@ type TaskDto struct {
 	UpdatedDate time.Time         `json:"updatedDate"`
 }
 
+type TasksDto struct {
+	Tasks []TaskDto `json:"tasks"`
+}
+
 func (d TaskDto) DomainToDto(t domain.Task) TaskDto {
 	return TaskDto{
 		Id:          t.Id,
@@ -28,4 +32,13 @@ func (d TaskDto) DomainToDto(t domain.Task) TaskDto {
 		CreatedDate: t.CreatedDate,
 		UpdatedDate: t.UpdatedDate,
 	}
+}
+
+func (d TasksDto) DomainToDtoCollection(ts []domain.Task) TasksDto {
+	tasks := make([]TaskDto, len(ts))
+	for i, t := range ts {
+		tDto := TaskDto{}.DomainToDto(t)
+		tasks[i] = tDto
+	}
+	return TasksDto{Tasks: tasks}
 }

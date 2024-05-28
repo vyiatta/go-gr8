@@ -44,3 +44,19 @@ func (c TaskController) Save() http.HandlerFunc {
 		Created(w, tDto)
 	}
 }
+
+func (c TaskController) FindByUserId() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user := r.Context().Value(UserKey).(domain.User)
+		tasks, err := c.taskService.FindByUserId(user.Id)
+		if err != nil {
+			log.Printf("TaskController -> FindByUserId: %s", err)
+			InternalServerError(w, err)
+			return
+		}
+
+		var tsDto resources.TasksDto
+		tsDto = tsDto.DomainToDtoCollection(tasks)
+		Success(w, tsDto)
+	}
+}
