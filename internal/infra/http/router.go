@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"strconv"
 
 	"github.com/BohdanBoriak/boilerplate-go-back/config"
 	"github.com/BohdanBoriak/boilerplate-go-back/config/container"
@@ -111,6 +112,17 @@ func TaskRouter(r chi.Router, tc controllers.TaskController) {
 		apiRouter.Get(
 			"/",
 			tc.FindByUserId(),
+		)
+
+		apiRouter.Get(
+			"/{taskId}",
+			func(w http.ResponseWriter, r *http.Request) {
+				taskIdStr := chi.URLParam(r, "taskId")
+				taskId, err := strconv.ParseUint(taskIdStr, 10, 64)
+				if err != nil {
+					return
+				}
+				tc.FindByTaskId(taskId)},
 		)
 	})
 }
