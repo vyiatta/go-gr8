@@ -60,3 +60,18 @@ func (c TaskController) FindByUserId() http.HandlerFunc {
 		Success(w, tsDto)
 	}
 }
+
+func (c TaskController) FindByTaskId(taskId uint64) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		task, err := c.taskService.FindByTaskId(taskId)
+		if err != nil {
+			log.Printf("TaskController -> FindByTaskId: %s", err)
+			InternalServerError(w, err)
+			return
+		}
+
+		var tDto resources.TaskDto
+		tDto = tDto.DomainToDto(task)
+		Success(w, tDto)
+	}
+}

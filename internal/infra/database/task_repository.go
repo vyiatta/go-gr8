@@ -24,6 +24,7 @@ type task struct {
 type TaskRepository interface {
 	Save(t domain.Task) (domain.Task, error)
 	FindByUserId(uId uint64) ([]domain.Task, error)
+	FindByTaskId(taskId uint64) (domain.Task, error)
 }
 
 type taskRepository struct {
@@ -62,6 +63,18 @@ func (r taskRepository) FindByUserId(uId uint64) ([]domain.Task, error) {
 
 	result := r.mapModelToDomainCollection(tasks)
 	return result, nil
+}
+
+func (r taskRepository) FindByTaskId(taskId uint64) (domain.Task, error) {
+	var task task
+	err := r.coll.
+		Find(db.Cond{"id": taskId, "deleted_date": nil}).
+		One(&task)
+	if err != nil {
+		return domain.Task{}, err
+	}
+
+	return r.mapModelToDomain(task), nil
 }
 
 func (r taskRepository) mapDomainToModel(t domain.Task) task {
