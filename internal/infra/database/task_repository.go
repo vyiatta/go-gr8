@@ -25,6 +25,8 @@ type TaskRepository interface {
 	Save(t domain.Task) (domain.Task, error)
 	FindByUserId(uId uint64) ([]domain.Task, error)
 	FindByTaskId(taskId uint64) (domain.Task, error)
+	Update(t domain.Task) (domain.Task, error)
+	DeleteByTaskId(t domain.Task) (domain.Task, error)
 }
 
 type taskRepository struct {
@@ -81,6 +83,18 @@ func (r taskRepository) Update(t domain.Task) (domain.Task, error) {
 	tsk := r.mapDomainToModel(t)
 	tsk.UpdatedDate = time.Now()
 	err := r.coll.Find(db.Cond{"id": tsk.Id, "deleted_date": nil}).Update(&tsk)
+	if err != nil {
+		return domain.Task{}, err
+	}
+	t = r.mapModelToDomain(tsk)
+	return t, nil
+}
+
+func (r taskRepository) DeleteByTaskId(t domain.Task) (domain.Task, error) {
+	tsk := r.mapDomainToModel(t)
+	now := time.Now()
+	tsk.DeletedDate = &now
+	err := r.coll.Find(db.Cond{"id": tsk.Id, "deleted_date": nil}).Update(map[string]interface{}{"deleted_date": tsk.DeletedDate})
 	if err != nil {
 		return domain.Task{}, err
 	}

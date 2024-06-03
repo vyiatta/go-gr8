@@ -98,3 +98,14 @@ func (c TaskController) Update(taskId uint64) http.HandlerFunc {
 		Success(w, tDto)
 	}
 }
+
+func (c TaskController) Delete(taskId uint64) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := c.taskService.DeleteByTaskId(taskId)
+		if err != nil {
+			log.Printf("TaskController -> Delete: %s", err)
+			InternalServerError(w, err)
+			return
+		}
+	}
+}
