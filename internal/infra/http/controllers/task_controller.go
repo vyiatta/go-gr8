@@ -75,3 +75,26 @@ func (c TaskController) FindByTaskId(taskId uint64) http.HandlerFunc {
 		Success(w, tDto)
 	}
 }
+
+func (c TaskController) Update(taskId uint64) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		task, err := requests.Bind(r, requests.TaskRequest{}, domain.Task{})
+		if err != nil {
+			log.Printf("TaskController -> Update: %s", err)
+			BadRequest(w, err)
+			return
+		}
+
+		task.Id = taskId
+		updatedTask, err := c.taskService.Update(task)
+		if err != nil {
+			log.Printf("TaskController -> Update: %s", err)
+			InternalServerError(w, err)
+			return
+		}
+
+		var tDto resources.TaskDto
+		tDto = tDto.DomainToDto(updatedTask)
+		Success(w, tDto)
+	}
+}

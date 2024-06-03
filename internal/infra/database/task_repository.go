@@ -77,6 +77,17 @@ func (r taskRepository) FindByTaskId(taskId uint64) (domain.Task, error) {
 	return r.mapModelToDomain(task), nil
 }
 
+func (r taskRepository) Update(t domain.Task) (domain.Task, error) {
+	tsk := r.mapDomainToModel(t)
+	tsk.UpdatedDate = time.Now()
+	err := r.coll.Find(db.Cond{"id": tsk.Id, "deleted_date": nil}).Update(&tsk)
+	if err != nil {
+		return domain.Task{}, err
+	}
+	t = r.mapModelToDomain(tsk)
+	return t, nil
+}
+
 func (r taskRepository) mapDomainToModel(t domain.Task) task {
 	return task{
 		Id:          t.Id,
